@@ -1,7 +1,10 @@
 import { torch, lantern, spell } from './lights.js';
+import { Logger } from './logger.js';
+
+const log = new Logger();
 
 Hooks.once('init', async function() {
-    console.log("OSE Lights Module initializing");
+    log.info("OSE Lights Module initializing");
     game.settings.register("ose-lights", "playerTorches", {
 		name: game.i18n.localize("ose-lights.player.name"),
 		hint: game.i18n.localize("ose-lights.player.hint"),
@@ -14,5 +17,6 @@ Hooks.once('init', async function() {
 
 Hooks.once('ready', async function() {
 	game.oselights = { torch, lantern, spell };
-    console.log("OSE Lights Module ready");
+	game.debug = true;
+    log.info("OSE Lights Module ready");
 });

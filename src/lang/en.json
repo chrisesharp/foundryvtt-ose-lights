@@ -1,0 +1,4 @@
+{
+    "ose-lights.player.name": "Player Controlled",
+	"ose-lights.player.hint": "Allow players to toggle their own light sources."
+}

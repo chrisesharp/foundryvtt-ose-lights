@@ -1,0 +1,36 @@
+{
+  "name": "ose-lights",
+  "version": "1.1.0",
+  "description": "Lighting System for OSE",
+  "scripts": {
+    "package": "gulp package",
+    "build": "gulp build && gulp link",
+    "build:watch": "gulp watch",
+    "clean": "gulp clean && gulp link --clean"
+  },
+  "browserslist": [
+    "last 3 versions"
+  ],
+  "author": "Chris Sharp",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "archiver": "^3.1.1",
+    "cb": "^0.1.0",
+    "chalk": "^3.0.0",
+    "fs-extra": "^8.1.0",
+    "gulp": "^4.0.2",
+    "gulp-git": "^2.10.0",
+    "gulp-less": "^4.0.1",
+    "gulp-sass": "^4.0.2",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "js-yaml": "^4.0.0",
+    "json-stringify-pretty-compact": "^2.0.0",
+    "merge-stream": "^2.0.0",
+    "nedb": "^1.8.0",
+    "sass": "^1.25.0",
+    "through2": "^2.0.5",
+    "typescript": "^3.9.7",
+    "yargs": "^15.1.0"
+  }
+}

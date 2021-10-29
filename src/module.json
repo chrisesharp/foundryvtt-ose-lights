@@ -5,8 +5,8 @@
     "version": "This is auto replaced",
     "library": "false",
     "manifestPlusVersion": "1.0.0",
-    "minimumCoreVersion": "0.8.8",
-    "compatibleCoreVersion": "0.8.8",
+    "minimumCoreVersion": "0.8.9",
+    "compatibleCoreVersion": "0.8.9",
     "authors": [
       {
         "name": "Chris Sharp",
@@ -15,7 +15,18 @@
       }
     ],
     "dependencies": [
-  
+      {
+        "name": "ose",
+        "manifest": "https://gitlab.com/mesfoliesludiques/foundryvtt-ose/-/raw/v1.2.2/src/system.json"
+      },
+      {
+        "name": "ose-content",
+        "manifest": "https://gitlab.com/mesfoliesludiques/foundryvtt-ose-content/raw/master/module.json"
+      },
+      {
+        "name": "about-time",
+        "manifest": "https://gitlab.com/tposney/about-time/raw/master/package/module.json"
+      }
     ],
     "conflicts": [
       

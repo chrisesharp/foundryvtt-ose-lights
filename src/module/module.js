@@ -1,4 +1,4 @@
-import { torch, lantern, spell } from './lights.js';
+import { torch, lantern, spell, extinguishLight } from './lights.js';
 import { Logger } from './logger.js';
 
 const log = new Logger();
@@ -16,7 +16,15 @@ Hooks.once('init', async function() {
 });
 
 Hooks.once('ready', async function() {
-	game.oselights = { torch, lantern, spell };
+	game.oselights = { torch, lantern, spell, extinguishLight };
 	game.debug = true;
     log.info("OSE Lights Module ready");
+});
+
+Hooks.on("about-time.eventTrigger",(event, tokenId)=> {
+	log.debug("eventTrigger hook called: ",event, tokenId);
+	if (event === "ExtinguishLight") {
+		const token = canvas.tokens.placeables.find(o => o.id === tokenId);
+		if (token) game.oselights.extinguishLight(token);
+	}
 });

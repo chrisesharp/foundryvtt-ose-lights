@@ -14,7 +14,7 @@ const LIGHTSOURCES = {
             type: "item",
             qty: "quantity"
         },
-        duration: 6,
+        duration: 60,
     },
     "Lantern": {
         config: {
@@ -31,7 +31,7 @@ const LIGHTSOURCES = {
             name: "Lantern",
             type: "item"
         },
-        duration: 24,
+        duration: 240,
     },
     "Light Spell": {
         config: {
@@ -44,7 +44,7 @@ const LIGHTSOURCES = {
             type: "spell",
             qty: "cast"
         },
-        duration: 12,
+        duration: 120,
     },
     "Continual Light Spell": {
         config: {
@@ -66,7 +66,7 @@ const lightOff = {
     brightLight: 0
 }
 
-async function hasResources(actor, type) {
+function hasResources(actor, type) {
     log.debug("hasResources() ", type);
     const lightSource = LIGHTSOURCES[type];
     const resource = lightSource.resource;
@@ -76,33 +76,37 @@ async function hasResources(actor, type) {
     log.debug(`has dependency? ${hasDependency}`);
     const requiredResource = actor.data.items.find(f => f.name === resource.name && f.type === resource.type);
     log.debug("required resource: ", requiredResource);
-    
-    const quantity = requiredResource.data.data[resource.qty] 
+
+    const quantity = (requiredResource) ? requiredResource.data.data[resource.qty]  : 0;
     log.debug("required resource quantity: ", quantity);
     if (hasDependency && requiredResource) {
-        const data = {};
-        let hasEnough = false;
-        if (quantity.value > 0) {
-            hasEnough = true;
-            const qty = {value: Math.max(0, requiredResource.data.data[resource.qty].value - 1)};
-            data[resource.qty]= qty;
-        } else if (quantity > 0) {
-            hasEnough = true;
-            data[resource.qty]= Math.max(0, requiredResource.data.data[resource.qty] - 1);
-        } else {
-            log.debug("not enough resource quantity");
-        }
+        const hasEnough = ((quantity.value > 0) || (quantity > 0));
         if (hasEnough) {
-            log.debug("new resource data: ", data);
-            await actor.updateEmbeddedDocuments("Item", [{_id:requiredResource.id,data:data}]);
-            return foundry.utils.mergeObject(LIGHTSOURCES[type],{item: requiredResource});
+            return requiredResource;
+        } else { 
+            log.debug("not enough resource quantity:",hasEnough);
         }
     }
 }
 
-function getLightSource(token, sourceName) {
+async function getLightSource(token, sourceName) {
     log.debug("getLightSource() ", token.actor, sourceName);
-    return hasResources(token.actor, sourceName);
+    const lightSource = LIGHTSOURCES[sourceName];
+    const resource = lightSource.resource;
+    const requiredResource = hasResources(token.actor, sourceName);
+    if (requiredResource) {
+        const quantity = (requiredResource) ? requiredResource.data.data[resource.qty]  : 0;
+        const data = {};
+        if (quantity.value > 0) {
+            const qty = {value: Math.max(0, requiredResource.data.data[resource.qty].value - 1)};
+            data[resource.qty]= qty;
+        } else if (quantity > 0) {
+            data[resource.qty]= Math.max(0, requiredResource.data.data[resource.qty] - 1);
+        }
+        log.debug("new resource data: ", data);
+        await token.actor.updateEmbeddedDocuments("Item", [{_id:requiredResource.id,data:data}]);
+        return foundry.utils.mergeObject(LIGHTSOURCES[sourceName],{item: requiredResource});
+    }
   } 
   
 async function illuminate(token, light) {
@@ -110,34 +114,46 @@ async function illuminate(token, light) {
     if (token) {
         const scene = game.scenes.active;
         const newToken = foundry.utils.mergeObject(token.data, light.config);
+        let eventId = 1;
         await scene.updateEmbeddedDocuments("Token",[newToken])
-        await token.document.setFlag("ose","light-on",true);
+        if (light.duration > 0) {
+            eventId = await game.Gametime.notifyAt({minute:light.duration}, "ExtinguishLight", token.id);
+            log.debug("Setting timer for ", light.duration, eventId);
+        }
+        await token.document.setFlag("ose","light-on", eventId);
     }
-    //game.Gametime.doIn(game.Gametime.DMf({minutes:60}), "ExtinguishTorch", actor.id, token.id);
 }
 
-async function extinguish(actorId, tokenId) {
-    log.debug("extinguish() ",actorId, tokenId);
-    const actor = game.actors.get(actorId);
-    const token = actor.getActiveTokens({linked:true}).find(t => t.id === tokenId);
+async function extinguish(token, eventId) {
+    log.debug("extinguish() ",token);
     if (token) {
+        game.Gametime.clearTimeout(eventId);
         const scene = game.scenes.active;
         const newToken = foundry.utils.mergeObject(token.data, lightOff);
         await scene.updateEmbeddedDocuments("Token",[newToken])
-        await token.document.setFlag("ose","light-on",false);
+        await token.document.setFlag("ose","light-on", 0);
     }
 }
 
 async function toggleLight(token, item) {
     log.debug("toggleLight() ", item);
-    if (!token.document.getFlag("ose","light-on" )) {
+    if (!token.document.getFlag("ose","light-on")) {
         const source = await getLightSource(token, item);
         if (source) illuminate(token, source);
     } else {
-        extinguish(token.actor.id, token.id);
+        extinguishLight(token);
     }
 }
 
+export function extinguishLight(token) {
+    log.debug("extinguishLight() ", token);
+    if (token) {
+        const eventId = token.document.getFlag("ose","light-on");
+        if (eventId > 0) {
+            extinguish(token, eventId);
+        }
+    }
+}
 export function torch(token) {
     log.debug("torch() ",token);
     if (token) {
@@ -155,6 +171,10 @@ export function lantern(token) {
 export function spell(token) {
     log.debug("spell() ",token);
     if (token) {
-        toggleLight(token, "Light Spell");
+        const hasCLSpell = hasResources(token.actor, "Continual Light Spell");
+        log.debug("has CL spell? ",hasCLSpell);
+        const spellName = (hasCLSpell) ? "Continual Light Spell" : "Light Spell";
+        log.debug("spell to use:",spellName);
+        toggleLight(token, spellName);
     }
 }

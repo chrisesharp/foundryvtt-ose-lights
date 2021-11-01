@@ -89,11 +89,11 @@ function hasResources(actor, type) {
     }
 }
 
-async function getLightSource(token, sourceName) {
-    log.debug("getLightSource() ", token.actor, sourceName);
+async function getLightSource(actor, sourceName) {
+    log.debug("getLightSource() ", actor, sourceName);
     const lightSource = LIGHTSOURCES[sourceName];
     const resource = lightSource.resource;
-    const requiredResource = hasResources(token.actor, sourceName);
+    const requiredResource = hasResources(actor, sourceName);
     if (requiredResource) {
         const quantity = (requiredResource) ? requiredResource.data.data[resource.qty]  : 0;
         const data = {};
@@ -104,7 +104,7 @@ async function getLightSource(token, sourceName) {
             data[resource.qty]= Math.max(0, requiredResource.data.data[resource.qty] - 1);
         }
         log.debug("new resource data: ", data);
-        await token.actor.updateEmbeddedDocuments("Item", [{_id:requiredResource.id,data:data}]);
+        await actor.updateEmbeddedDocuments("Item", [{_id:requiredResource.id,data:data}]);
         return foundry.utils.mergeObject(LIGHTSOURCES[sourceName],{item: requiredResource});
     }
   } 
@@ -135,10 +135,10 @@ async function extinguish(token, eventId) {
     }
 }
 
-async function toggleLight(token, item) {
+async function toggleLight(actor, token, item) {
     log.debug("toggleLight() ", item);
     if (!token.document.getFlag("ose","light-on")) {
-        const source = await getLightSource(token, item);
+        const source = await getLightSource(actor, item);
         if (source) illuminate(token, source);
     } else {
         extinguishLight(token);
@@ -157,24 +157,30 @@ export function extinguishLight(token) {
 export function torch(token) {
     log.debug("torch() ",token);
     if (token) {
-        toggleLight(token, "Torch");
+        toggleLight(token.actor, token, "Torch");
     }
 }
 
 export function lantern(token) {
     log.debug("lantern() ",token);
     if (token) {
-        toggleLight(token, "Lantern");
+        toggleLight(token.actor, token, "Lantern");
     }
 }
 
 export function spell(token) {
-    log.debug("spell() ",token);
+    log.debug("spell() ", token);
     if (token) {
+        let target = token;
+        log.debug("Targets:",game.user.targets.size);
+        game.user.targets.forEach(t => {
+            target = t;
+        });
+        log.debug("target of Light Spell: ", target);
         const hasCLSpell = hasResources(token.actor, "Continual Light Spell");
         log.debug("has CL spell? ",hasCLSpell);
         const spellName = (hasCLSpell) ? "Continual Light Spell" : "Light Spell";
         log.debug("spell to use:",spellName);
-        toggleLight(token, spellName);
+        toggleLight(token.actor, target, spellName);
     }
 }

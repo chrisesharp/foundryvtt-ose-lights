@@ -17,7 +17,7 @@
     "dependencies": [
       {
         "name": "ose",
-        "manifest": "https://gitlab.com/mesfoliesludiques/foundryvtt-ose/-/raw/v1.2.2/src/system.json"
+        "type": "system"
       },
       {
         "name": "ose-content",

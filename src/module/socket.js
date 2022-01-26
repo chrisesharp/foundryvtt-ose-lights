@@ -18,12 +18,13 @@ export function clearLightTimer(eventId, token) {
 }
 
 async function _setTimer(duration, tokenId) {
-    log.debug("setTimer", duration, tokenId);
-    let eventId = 1;
+    log.debug("setTimer():", duration, tokenId);
+    let eventId;
     if (duration > 0) {
         eventId = await game.Gametime.notifyAt({minute:duration}, "ExtinguishLight", tokenId);
         log.debug("Setting timer for ", duration, eventId);
     }
+    eventId = eventId || 1;
     const token = game.canvas.tokens.placeables.find( e => e.id == tokenId);
     await token.document.setFlag("ose","light-on", eventId);
 }

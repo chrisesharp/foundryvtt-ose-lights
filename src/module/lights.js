@@ -159,6 +159,7 @@ export function extinguishLight(token) {
     log.debug("extinguishLight() ", token);
     if (token) {
         const eventId = token.document.getFlag("ose","light-on");
+        log.debug("Extinguishing event ",eventId);
         if (eventId > 0) {
             extinguish(token, eventId);
         }

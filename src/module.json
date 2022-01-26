@@ -26,6 +26,10 @@
       {
         "name": "about-time",
         "manifest": "https://gitlab.com/tposney/about-time/raw/master/package/module.json"
+      },
+      {
+        "name": "socketlib",
+        "manifest": "https://raw.githubusercontent.com/manuelVo/foundryvtt-socketlib/master/module.json"
       }
     ],
     "conflicts": [
@@ -48,6 +52,7 @@
         "path": "lang/en.json"
       }
     ],
+    "socket": true,
     "url": "This is auto replaced",
     "manifest": "This is auto replaced",
     "download": "This is auto replaced",

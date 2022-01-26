@@ -5,12 +5,19 @@ const log = new Logger();
 
 Hooks.once('init', async function() {
     log.info("OSE Lights Module initializing");
-    game.settings.register("ose-lights", "playerTorches", {
+    game.settings.register("ose-lights", "player-allowed", {
 		name: game.i18n.localize("ose-lights.player.name"),
 		hint: game.i18n.localize("ose-lights.player.hint"),
 		scope: "world",
 		config: true,
 		default: true,
+		type: Boolean
+	});
+	game.settings.register("ose-lights", "debug", {
+		name: game.i18n.localize("ose-lights.debug"),
+		scope: "world",
+		config: true,
+		default: false,
 		type: Boolean
 	});
 });

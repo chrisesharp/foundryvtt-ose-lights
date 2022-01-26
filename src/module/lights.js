@@ -1,13 +1,14 @@
 import { Logger } from "./logger.js";
+import { setLightTimer, clearLightTimer } from "./socket.js";
 
 const log = new Logger();
 
 const LIGHTSOURCES = {
     "Torch": {
-        config: {
-            dimLight: 30,
-            brightLight: 15,
-            lightAngle: 360
+        light: {
+            dim: 30,
+            bright: 15,
+            angle: 360
         },
         resource: {
             name: "Torch",
@@ -17,10 +18,10 @@ const LIGHTSOURCES = {
         duration: 60,
     },
     "Lantern": {
-        config: {
-            dimLight: 30,
-            brightLight: 15,
-            lightAngle: 30,
+        light: {
+            dim: 30,
+            bright: 15,
+            angle: 30,
         },
         resource: {
             name: "Oil flask", 
@@ -34,10 +35,10 @@ const LIGHTSOURCES = {
         duration: 240,
     },
     "Light Spell": {
-        config: {
-            dimLight: 15,
-            brightLight: 5,
-            lightAngle: 360,
+        light: {
+            dim: 15,
+            bright: 5,
+            angle: 360,
         },
         resource: {
             name: "C1.4 Light",
@@ -47,10 +48,10 @@ const LIGHTSOURCES = {
         duration: 120,
     },
     "Continual Light Spell": {
-        config: {
-            dimLight: 30,
-            brightLight: 15,
-            lightAngle: 360,
+        light: {
+            dim: 30,
+            bright: 15,
+            angle: 360,
         },
         resource: {
             name: "C3.1 Continual Light",
@@ -62,8 +63,8 @@ const LIGHTSOURCES = {
 }
 
 const lightOff = {
-    dimLight: 0,
-    brightLight: 0
+    dim: 0,
+    bright: 0
 }
 
 function hasResources(actor, type) {
@@ -113,35 +114,44 @@ async function illuminate(token, light) {
     log.debug("illuminate() ", light)
     if (token) {
         const scene = game.scenes.active;
-        const newToken = foundry.utils.mergeObject(token.data, light.config);
-        let eventId = 1;
-        await scene.updateEmbeddedDocuments("Token",[newToken])
-        if (light.duration > 0) {
-            eventId = await game.Gametime.notifyAt({minute:light.duration}, "ExtinguishLight", token.id);
-            log.debug("Setting timer for ", light.duration, eventId);
-        }
-        await token.document.setFlag("ose","light-on", eventId);
+        const existingData = token.data;
+        existingData.light = light.light;
+        const newToken = foundry.utils.mergeObject(token.data, existingData);
+        
+        await scene.updateEmbeddedDocuments("Token",[newToken]);
+        token.updateLightSource();
+
+        setLightTimer(light, token);
     }
 }
 
 async function extinguish(token, eventId) {
     log.debug("extinguish() ",token);
     if (token) {
-        game.Gametime.clearTimeout(eventId);
         const scene = game.scenes.active;
-        const newToken = foundry.utils.mergeObject(token.data, lightOff);
+        const existingData = token.data;
+        existingData.light = lightOff;
+        const newToken = foundry.utils.mergeObject(token.data, existingData);
+
         await scene.updateEmbeddedDocuments("Token",[newToken])
-        await token.document.setFlag("ose","light-on", 0);
+        token.updateLightSource();
+        clearLightTimer(eventId, token);
     }
 }
 
 async function toggleLight(actor, token, item) {
     log.debug("toggleLight() ", item);
-    if (!token.document.getFlag("ose","light-on")) {
-        const source = await getLightSource(actor, item);
-        if (source) illuminate(token, source);
+    if (game.settings.get("ose-lights","player-allowed")===true || game.user.isGM) {
+        if (!token.document.getFlag("ose","light-on")) {
+            log.debug("toggleLight(): light-on flag not on");
+            const source = await getLightSource(actor, item);
+            log.debug("toggleLight(): lightsource is ", source);
+            if (source) illuminate(token, source);
+        } else {
+            extinguishLight(token);
+        }
     } else {
-        extinguishLight(token);
+        log.debug("toggleLight(): Players not allowed");
     }
 }
 

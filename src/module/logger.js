@@ -4,7 +4,7 @@ export class Logger {
     }
 
     debugMode() {
-        return game.debug || false;
+        return game.settings.get("ose-lights","debug") || false;
     }
 
 

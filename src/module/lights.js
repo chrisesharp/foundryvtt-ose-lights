@@ -67,11 +67,11 @@ const lightOff = {
     bright: 0
 }
 
-function hasResources(actor, type) {
-    log.debug("hasResources() ", type);
+function hasResources(actor, type, noisily=true) {
+    log.debug("hasResources(): ", type);
     const lightSource = LIGHTSOURCES[type];
     const resource = lightSource.resource;
-    const dependency = lightSource.other;
+    const dependency = lightSource.dependency;
 
     const hasDependency = (dependency) ? actor.data.items.find(f => f.name === dependency.name && f.type === dependency.type) : true;
     log.debug(`has dependency? ${hasDependency}`);
@@ -84,14 +84,16 @@ function hasResources(actor, type) {
         const hasEnough = ((quantity.value > 0) || (quantity > 0));
         if (hasEnough) {
             return requiredResource;
-        } else { 
-            log.debug("not enough resource quantity:",hasEnough);
         }
+    }
+    if (noisily) {
+        const message = (hasDependency) ? `You can't light a ${type} because you don't have enough of the required resource  "${resource.name}"` : `You can't light a ${type} because you don't have the requisite "${dependency.name}"`;
+        ui.notifications.warn(message);
     }
 }
 
 async function getLightSource(actor, sourceName) {
-    log.debug("getLightSource() ", actor, sourceName);
+    log.debug("getLightSource():", actor, sourceName);
     const lightSource = LIGHTSOURCES[sourceName];
     const resource = lightSource.resource;
     const requiredResource = hasResources(actor, sourceName);
@@ -111,7 +113,7 @@ async function getLightSource(actor, sourceName) {
   } 
   
 async function illuminate(token, light) {
-    log.debug("illuminate() ", light)
+    log.debug("illuminate():", light)
     if (token) {
         const scene = game.scenes.active;
         const existingData = token.data;
@@ -122,11 +124,19 @@ async function illuminate(token, light) {
         token.updateLightSource();
 
         setLightTimer(light, token);
+
+        const item = (light.dependency) ? light.dependency.name: light.resource.name;
+        const message = `lit up a ${item}`;
+        ChatMessage.create({
+            user: game.user._id,
+            speaker: ChatMessage.getSpeaker({token: token.actor.name}),
+            content: message
+            });
     }
 }
 
 async function extinguish(token, eventId) {
-    log.debug("extinguish() ",token);
+    log.debug("extinguish():",token);
     if (token) {
         const scene = game.scenes.active;
         const existingData = token.data;
@@ -136,11 +146,18 @@ async function extinguish(token, eventId) {
         await scene.updateEmbeddedDocuments("Token",[newToken])
         token.updateLightSource();
         clearLightTimer(eventId, token);
+
+        const message = `Extinguished their light source.`;
+        ChatMessage.create({
+            user: game.user._id,
+            speaker: ChatMessage.getSpeaker({token: token.actor.name}),
+            content: message
+            });
     }
 }
 
 async function toggleLight(actor, token, item) {
-    log.debug("toggleLight() ", item);
+    log.debug("toggleLight():", item);
     if (game.settings.get("ose-lights","player-allowed")===true || game.user.isGM) {
         if (!token.document.getFlag("ose","light-on")) {
             log.debug("toggleLight(): light-on flag not on");
@@ -156,7 +173,7 @@ async function toggleLight(actor, token, item) {
 }
 
 export function extinguishLight(token) {
-    log.debug("extinguishLight() ", token);
+    log.debug("extinguishLight(): ", token);
     if (token) {
         const eventId = token.document.getFlag("ose","light-on");
         log.debug("Extinguishing event ",eventId);
@@ -166,21 +183,21 @@ export function extinguishLight(token) {
     }
 }
 export function torch(token) {
-    log.debug("torch() ",token);
+    log.debug("torch():",token);
     if (token) {
         toggleLight(token.actor, token, "Torch");
     }
 }
 
 export function lantern(token) {
-    log.debug("lantern() ",token);
+    log.debug("lantern():",token);
     if (token) {
         toggleLight(token.actor, token, "Lantern");
     }
 }
 
 export function spell(token) {
-    log.debug("spell() ", token);
+    log.debug("spell():", token);
     if (token) {
         let target = token;
         log.debug("Targets:",game.user.targets.size);
@@ -188,7 +205,7 @@ export function spell(token) {
             target = t;
         });
         log.debug("target of Light Spell: ", target);
-        const hasCLSpell = hasResources(token.actor, "Continual Light Spell");
+        const hasCLSpell = hasResources(token.actor, "Continual Light Spell", false);
         log.debug("has CL spell? ",hasCLSpell);
         const spellName = (hasCLSpell) ? "Continual Light Spell" : "Light Spell";
         log.debug("spell to use:",spellName);

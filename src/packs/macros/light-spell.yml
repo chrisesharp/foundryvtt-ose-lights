@@ -1,0 +1,7 @@
+name: Light Spell
+type: script
+img: icons/magic/light/explosion-star-glow-orange.webp
+command: |-
+  if (token) {
+    game.oselights.spell(token);
+  }

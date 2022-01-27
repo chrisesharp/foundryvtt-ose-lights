@@ -1,0 +1,7 @@
+name: Lantern
+type: script
+img: icons/sundries/lights/lantern-bullseye-signal-copper.webp
+command: |-
+  if (token) {
+    game.oselights.lantern(token);
+  }

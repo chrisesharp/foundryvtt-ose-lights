@@ -1,0 +1,7 @@
+name: Torch
+type: script
+img: icons/sundries/lights/torch-brown.webp
+command: |-
+  if (token) {
+    game.oselights.torch(token);
+  }

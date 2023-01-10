@@ -24,7 +24,7 @@ Hooks.once('init', async function() {
 
 Hooks.once('ready', async function() {
 	game.oselights = { torch, lantern, spell, extinguishLight };
-	game.debug = true;
+	game.oselights.debug = true;
     log.info("OSE Lights Module ready");
 });
 

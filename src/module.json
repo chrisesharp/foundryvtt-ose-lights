@@ -1,12 +1,13 @@
 {
-  "name": "ose-lights",
+  "id": "ose-lights",
   "title": "Light sources for OSE",
   "description": "Provides torch, lantern, light spells, etc. for OSE system.",
-  "version": "1.1.2",
-  "library": "false",
-  "manifestPlusVersion": "1.0.0",
-  "minimumCoreVersion": "0.8.9",
-  "compatibleCoreVersion": "9",
+  "version": "1.2.0",
+  "compatibility": {
+    "minimum": 10,
+    "verified": 10.291,
+    "maximum": 10
+  },
   "authors": [
     {
       "name": "Chris Sharp",
@@ -14,25 +15,28 @@
       "discord": "ChrisSharp#3966"
     }
   ],
-  "dependencies": [
-    {
-      "name": "ose",
-      "type": "system"
-    },
-    {
-      "name": "ose-content",
-      "manifest": "https://gitlab.com/mesfoliesludiques/foundryvtt-ose-content/raw/master/module.json"
-    },
-    {
-      "name": "about-time",
-      "manifest": "https://gitlab.com/tposney/about-time/raw/master/package/module.json"
-    },
-    {
-      "name": "socketlib",
-      "manifest": "https://raw.githubusercontent.com/manuelVo/foundryvtt-socketlib/master/module.json"
-    }
-  ],
-  "conflicts": [],
+  "relationships": { 
+    "systems": [
+      {
+        "id": "ose",
+        "manifest": "https://github.com/vttred/ose/releases/latest/download/system.json"
+      }
+    ],
+    "requires": [
+      {
+        "id": "ose-content",
+        "manifest": "https://github.com/vttred/ose-content/releases/latest/download/module.json"
+      },
+      {
+        "id": "about-time",
+        "manifest": "https://gitlab.com/tposney/about-time/raw/master/package/module.json"
+      },
+      {
+        "id": "foundryvtt-simple-calendar",
+        "manifest": "https://github.com/vigoren/foundryvtt-simple-calendar/releases/latest/download/module.json"
+      }
+    ]
+  },
   "esmodules": [
     "module/module.js"
   ],
@@ -43,10 +47,9 @@
       "label": "Macros",
       "package": "ose-lights",
       "path": "packs/macros.db",
-      "entity": "Macro"
+      "type": "Macro"
     }
   ],
-  "styles": ["styles/module.css"],
   "languages": [
     {
       "lang": "en",
@@ -57,7 +60,7 @@
   "socket": true,
   "url": "https://github.com/chrisesharp/foundryvtt-ose-lights",
   "manifest": "https://raw.githubusercontent.com/chrisesharp/foundryvtt-ose-lights/master/src/module.json",
-  "download": "https://raw.githubusercontent.com/chrisesharp/foundryvtt-ose-lights/master/package/ose-lights-v1.1.2.zip",
+  "download": "https://raw.githubusercontent.com/chrisesharp/foundryvtt-ose-lights/master/package/ose-lights-v1.2.0.zip",
   "media": [
     {
       "type": "icon",

@@ -6,9 +6,15 @@ const log = new Logger();
 const LIGHTSOURCES = {
     "Torch": {
         light: {
+            alpha: 0.15,
             dim: 30,
             bright: 15,
-            angle: 360
+            angle: 360,
+            color: "#5c4b0f",
+            animation: {
+                type: "torch"
+            },
+            attenuation: 0.7,
         },
         resource: {
             name: "Torch",
@@ -19,9 +25,15 @@ const LIGHTSOURCES = {
     },
     "Lantern": {
         light: {
+            alpha: 0.15,
             dim: 30,
             bright: 15,
             angle: 30,
+            color: "#5c4b0f",
+            animation: {
+                type: "flame"
+            },
+            attenuation: 0.7,
         },
         resource: {
             name: "Oil flask", 
@@ -36,9 +48,15 @@ const LIGHTSOURCES = {
     },
     "Light Spell": {
         light: {
+            alpha: 0.25,
             dim: 15,
             bright: 5,
             angle: 360,
+            color: "#ffffff",
+            animation: {
+                type: "starlight"
+            },
+            attenuation: 0.7,
         },
         resource: {
             name: "C1.4 Light",
@@ -49,9 +67,15 @@ const LIGHTSOURCES = {
     },
     "Continual Light Spell": {
         light: {
+            alpha: 0.25,
             dim: 30,
             bright: 15,
             angle: 360,
+            color: "#ffffff",
+            animation: {
+                type: "starlight"
+            },
+            attenuation: 0.7,
         },
         resource: {
             name: "C3.1 Continual Light",
@@ -64,7 +88,8 @@ const LIGHTSOURCES = {
 
 const lightOff = {
     dim: 0,
-    bright: 0
+    bright: 0,
+    animation: {}
 }
 
 function hasResources(actor, type, noisily=true) {
@@ -73,12 +98,12 @@ function hasResources(actor, type, noisily=true) {
     const resource = lightSource.resource;
     const dependency = lightSource.dependency;
 
-    const hasDependency = (dependency) ? actor.data.items.find(f => f.name === dependency.name && f.type === dependency.type) : true;
+    const hasDependency = (dependency) ? actor.items.find(f => f.name === dependency.name && f.type === dependency.type) : true;
     log.debug(`has dependency? ${hasDependency}`);
-    const requiredResource = actor.data.items.find(f => f.name === resource.name && f.type === resource.type);
+    const requiredResource = actor.items.find(f => f.name === resource.name && f.type === resource.type);
     log.debug("required resource: ", requiredResource);
 
-    const quantity = (requiredResource) ? requiredResource.data.data[resource.qty]  : 0;
+    const quantity = (requiredResource) ? requiredResource.system[resource.qty]  : 0;
     log.debug("required resource quantity: ", quantity);
     if (hasDependency && requiredResource) {
         const hasEnough = ((quantity.value > 0) || (quantity > 0));
@@ -98,13 +123,13 @@ async function getLightSource(actor, sourceName) {
     const resource = lightSource.resource;
     const requiredResource = hasResources(actor, sourceName);
     if (requiredResource) {
-        const quantity = (requiredResource) ? requiredResource.data.data[resource.qty]  : 0;
+        const quantity = (requiredResource) ? requiredResource.system[resource.qty]  : 0;
         const data = {};
         if (quantity.value > 0) {
-            const qty = {value: Math.max(0, requiredResource.data.data[resource.qty].value - 1)};
+            const qty = {value: Math.max(0, requiredResource.system[resource.qty].value - 1)};
             data[resource.qty]= qty;
         } else if (quantity > 0) {
-            data[resource.qty]= Math.max(0, requiredResource.data.data[resource.qty] - 1);
+            data[resource.qty]= Math.max(0, requiredResource.system[resource.qty] - 1);
         }
         log.debug("new resource data: ", data);
         await actor.updateEmbeddedDocuments("Item", [{_id:requiredResource.id,data:data}]);
@@ -115,14 +140,12 @@ async function getLightSource(actor, sourceName) {
 async function illuminate(token, light) {
     log.debug("illuminate():", light)
     if (token) {
-        const scene = game.scenes.active;
-        const existingData = token.data;
-        existingData.light = light.light;
-        const newToken = foundry.utils.mergeObject(token.data, existingData);
-        
-        await scene.updateEmbeddedDocuments("Token",[newToken]);
-        token.updateLightSource();
-
+        const tokenArray = [token];
+        const scene = canvas.scene;
+        const updates = duplicate(token.document)
+        mergeObject(updates.light, light.light)
+        let updateMap = tokenArray.map(t => mergeObject({ _id: t.id }, updates))
+        await scene.updateEmbeddedDocuments("Token", updateMap);
         setLightTimer(light, token);
 
         const item = (light.dependency) ? light.dependency.name: light.resource.name;
@@ -138,13 +161,12 @@ async function illuminate(token, light) {
 async function extinguish(token, eventId) {
     log.debug("extinguish():",token);
     if (token) {
-        const scene = game.scenes.active;
-        const existingData = token.data;
-        existingData.light = lightOff;
-        const newToken = foundry.utils.mergeObject(token.data, existingData);
-
-        await scene.updateEmbeddedDocuments("Token",[newToken])
-        token.updateLightSource();
+        const tokenArray = [token];
+        const scene = canvas.scene;
+        const updates = duplicate(token.document)
+        mergeObject(updates.light, lightOff)
+        let updateMap = tokenArray.map(t => mergeObject({ _id: t.id }, updates))
+        await scene.updateEmbeddedDocuments("Token", updateMap);
         clearLightTimer(eventId, token);
 
         const message = `Extinguished their light source.`;

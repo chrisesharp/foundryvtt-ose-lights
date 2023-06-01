@@ -25,6 +25,10 @@
     ],
     "requires": [
       {
+        "id": "classicfantasycompendium",
+        "manifest": "https://github.com/unitedfantasytoolkit/classicfantasycompendium/releases/download/1.0.0/module.json"
+      },
+      {
         "id": "about-time",
         "manifest": "https://gitlab.com/tposney/about-time/raw/master/package/module.json"
       },

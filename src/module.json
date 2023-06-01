@@ -3,11 +3,11 @@
   "name": "ose-lights",
   "title": "Light sources for OSE",
   "description": "Provides torch, lantern, light spells, etc. for OSE system.",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "compatibility": {
-    "minimum": 10,
-    "verified": 10.291,
-    "maximum": 10
+    "minimum": 11,
+    "verified": 11.299,
+    "maximum": 11
   },
   "authors": [
     {
@@ -65,7 +65,7 @@
   "socket": true,
   "url": "https://github.com/chrisesharp/foundryvtt-ose-lights",
   "manifest": "https://raw.githubusercontent.com/chrisesharp/foundryvtt-ose-lights/master/src/module.json",
-  "download": "https://raw.githubusercontent.com/chrisesharp/foundryvtt-ose-lights/master/package/ose-lights-v1.2.3.zip",
+  "download": "https://raw.githubusercontent.com/chrisesharp/foundryvtt-ose-lights/master/package/ose-lights-v1.2.4.zip",
   "media": [
     {
       "type": "icon",

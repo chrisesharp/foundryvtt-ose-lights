@@ -3,7 +3,7 @@
   "name": "ose-lights",
   "title": "Light sources for OSE",
   "description": "Provides torch, lantern, light spells, etc. for OSE system.",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "compatibility": {
     "minimum": 11,
     "verified": 11.299,
@@ -24,10 +24,6 @@
       }
     ],
     "requires": [
-      {
-        "id": "ose-content",
-        "manifest": "https://github.com/vttred/ose-content/releases/latest/download/module.json"
-      },
       {
         "id": "about-time",
         "manifest": "https://gitlab.com/tposney/about-time/raw/master/package/module.json"
@@ -65,7 +61,7 @@
   "socket": true,
   "url": "https://github.com/chrisesharp/foundryvtt-ose-lights",
   "manifest": "https://raw.githubusercontent.com/chrisesharp/foundryvtt-ose-lights/master/src/module.json",
-  "download": "https://raw.githubusercontent.com/chrisesharp/foundryvtt-ose-lights/master/package/ose-lights-v1.2.4.zip",
+  "download": "https://raw.githubusercontent.com/chrisesharp/foundryvtt-ose-lights/master/package/ose-lights-v1.2.5.zip",
   "media": [
     {
       "type": "icon",

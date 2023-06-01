@@ -132,7 +132,7 @@ async function getLightSource(actor, sourceName) {
             data[resource.qty]= Math.max(0, requiredResource.system[resource.qty] - 1);
         }
         log.debug("new resource data: ", data);
-        await actor.updateEmbeddedDocuments("Item", [{_id:requiredResource.id,data:data}]);
+        await actor.updateEmbeddedDocuments("Item", [{_id:requiredResource.id,system:data}]);
         return foundry.utils.mergeObject(LIGHTSOURCES[sourceName],{item: requiredResource});
     }
   } 

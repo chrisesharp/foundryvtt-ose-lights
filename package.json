@@ -1,6 +1,6 @@
 {
   "name": "ose-lights",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "Lighting System for OSE",
   "scripts": {
     "package": "gulp package",

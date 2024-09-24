@@ -21,7 +21,7 @@ async function _setTimer(duration, tokenId) {
     log.debug("setTimer():", duration, tokenId);
     let eventId;
     if (duration > 0) {
-        eventId = await game.Gametime.notifyAt({minute:duration}, "ExtinguishLight", tokenId);
+        eventId = await game.abouttime.notifyAt({minute:duration}, "ExtinguishLight", tokenId);
         log.debug("Setting timer for ", duration, eventId);
     }
     eventId = eventId || 1;
@@ -30,7 +30,7 @@ async function _setTimer(duration, tokenId) {
 }
 
 async function _clearTimer(eventId, tokenId) {
-    game.Gametime.clearTimeout(eventId);
+    game.abouttime.clearTimeout(eventId);
     const token = game.canvas.tokens.placeables.find( e => e.id == tokenId);
     await token.document.setFlag("ose","light-on", 0);
 }

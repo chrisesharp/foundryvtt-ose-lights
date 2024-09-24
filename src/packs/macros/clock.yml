@@ -1,4 +1,4 @@
 name: Clock
 type: script
 command: |-
-  game.Gametime.showClock();
+  game.abouttime.showClock();

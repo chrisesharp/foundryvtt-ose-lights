@@ -133,7 +133,7 @@ async function getLightSource(actor, sourceName) {
         }
         log.debug("new resource data: ", data);
         await actor.updateEmbeddedDocuments("Item", [{_id:requiredResource.id,system:data}]);
-        return foundry.utils.mergeObject(LIGHTSOURCES[sourceName],{item: requiredResource});
+        return foundry.utils.foundry.utils.mergeObject(LIGHTSOURCES[sourceName],{item: requiredResource});
     }
   } 
   
@@ -142,9 +142,9 @@ async function illuminate(token, light) {
     if (token) {
         const tokenArray = [token];
         const scene = canvas.scene;
-        const updates = duplicate(token.document)
-        mergeObject(updates.light, light.light)
-        let updateMap = tokenArray.map(t => mergeObject({ _id: t.id }, updates))
+        const updates = foundry.utils.duplicate(token.document)
+        foundry.utils.mergeObject(updates.light, light.light)
+        let updateMap = tokenArray.map(t => foundry.utils.mergeObject({ _id: t.id }, updates))
         await scene.updateEmbeddedDocuments("Token", updateMap);
         setLightTimer(light, token);
 
@@ -163,9 +163,9 @@ async function extinguish(token, eventId) {
     if (token) {
         const tokenArray = [token];
         const scene = canvas.scene;
-        const updates = duplicate(token.document)
-        mergeObject(updates.light, lightOff)
-        let updateMap = tokenArray.map(t => mergeObject({ _id: t.id }, updates))
+        const updates = foundry.utils.duplicate(token.document)
+        foundry.utils.mergeObject(updates.light, lightOff)
+        let updateMap = tokenArray.map(t => foundry.utils.mergeObject({ _id: t.id }, updates))
         await scene.updateEmbeddedDocuments("Token", updateMap);
         clearLightTimer(eventId, token);
 

@@ -133,7 +133,7 @@ async function getLightSource(actor, sourceName) {
         }
         log.debug("new resource data: ", data);
         await actor.updateEmbeddedDocuments("Item", [{_id:requiredResource.id,system:data}]);
-        return foundry.utils.foundry.utils.mergeObject(LIGHTSOURCES[sourceName],{item: requiredResource});
+        return foundry.utils.mergeObject(LIGHTSOURCES[sourceName],{item: requiredResource});
     }
   } 
   

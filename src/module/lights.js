@@ -6,11 +6,11 @@ const log = new Logger();
 const LIGHTSOURCES = {
     "Torch": {
         light: {
-            alpha: 0.75,
-            dim: 3,
-            bright: 1.5,
+            alpha: 0.1,
+            dim: 30,
+            bright: 10,
             angle: 360,
-            color: "#5c4b0f",
+            color: "#b0850c",
             animation: {
                 type: "torch"
             },
@@ -27,8 +27,8 @@ const LIGHTSOURCES = {
     "Lantern": {
         light: {
             alpha: 0.15,
-            dim: 10,
-            bright: 1.5,
+            dim: 60,
+            bright: 10,
             angle: 30,
             color: "#5c4b0f",
             animation: {
@@ -50,16 +50,16 @@ const LIGHTSOURCES = {
     },
     "Light Spell": {
         light: {
-            alpha: 0.85,
-            dim: 3,
-            bright: 1.5,
+            alpha: 0.45,
+            dim: 30,
+            bright: 15,
             angle: 360,
             color: "#ffffff",
             animation: {
                 type: "starlight"
             },
             attenuation: 0.7,
-            luminosity: 0.7,
+            luminosity: 0.6,
         },
         resource: {
             name: "C1.4 Light",
@@ -70,16 +70,16 @@ const LIGHTSOURCES = {
     },
     "Continual Light Spell": {
         light: {
-            alpha: 0.85,
-            dim: 3,
-            bright: 1.5,
+            alpha: 0.45,
+            dim: 30,
+            bright: 15,
             angle: 360,
             color: "#ffffff",
             animation: {
                 type: "starlight"
             },
             attenuation: 0.7,
-            luminosity: 0.7,
+            luminosity: 0.6,
         },
         resource: {
             name: "C3.1 Continual Light",

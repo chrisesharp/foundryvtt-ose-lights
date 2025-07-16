@@ -34,7 +34,7 @@ Hooks.once('init', async function() {
 
 Hooks.once('ready', async function() {
 	game.oselights = { torch, lantern, spell, extinguishLight };
-	game.oselights.debug = true;
+	game.oselights.debug = false;
 	PseudoClock.init();
     ElapsedTime.init();
     log.info("OSE Lights Module ready");

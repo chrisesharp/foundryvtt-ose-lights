@@ -1,4 +1,5 @@
 import { Logger } from "./logger.js";
+import { ElapsedTime } from "./about-time/ElapsedTime.js"
 
 const log = new Logger();
 let socket;
@@ -21,7 +22,7 @@ async function _setTimer(duration, tokenId) {
     log.debug("setTimer():", duration, tokenId);
     let eventId;
     if (duration > 0) {
-        eventId = await game.abouttime.notifyAt({minute:duration}, "ExtinguishLight", tokenId);
+        eventId = await ElapsedTime.notifyAt({minute:duration}, "ExtinguishLight", tokenId);
         log.debug("Setting timer for ", duration, eventId);
     }
     eventId = eventId || 1;
@@ -30,7 +31,7 @@ async function _setTimer(duration, tokenId) {
 }
 
 async function _clearTimer(eventId, tokenId) {
-    game.abouttime.clearTimeout(eventId);
+    ElapsedTime.gclearTimeout(eventId);
     const token = game.canvas.tokens.placeables.find( e => e.id == tokenId);
     await token.document.setFlag("ose","light-on", 0);
 }

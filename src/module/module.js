@@ -1,5 +1,7 @@
 import { torch, lantern, spell, extinguishLight } from './lights.js';
 import { Logger } from './logger.js';
+import { ElapsedTime } from "./about-time/ElapsedTime.js"
+import { PseudoClock } from './about-time/PseudoClock.js';
 
 const log = new Logger();
 
@@ -20,11 +22,21 @@ Hooks.once('init', async function() {
 		default: false,
 		type: Boolean
 	});
+	game.settings.register("about-time", "store", {
+        name: "Elapsed Time event queue",
+        hint: "Don't touch this",
+        default: {},
+        type: Object,
+        scope: 'world',
+        config: false
+    });
 });
 
 Hooks.once('ready', async function() {
 	game.oselights = { torch, lantern, spell, extinguishLight };
 	game.oselights.debug = true;
+	PseudoClock.init();
+    ElapsedTime.init();
     log.info("OSE Lights Module ready");
 });
 

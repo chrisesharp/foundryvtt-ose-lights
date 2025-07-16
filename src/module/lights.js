@@ -6,15 +6,16 @@ const log = new Logger();
 const LIGHTSOURCES = {
     "Torch": {
         light: {
-            alpha: 0.15,
-            dim: 30,
-            bright: 15,
+            alpha: 0.75,
+            dim: 3,
+            bright: 1.5,
             angle: 360,
             color: "#5c4b0f",
             animation: {
                 type: "torch"
             },
             attenuation: 0.7,
+            luminosity: 0.5,
         },
         resource: {
             name: "Torch",
@@ -26,17 +27,18 @@ const LIGHTSOURCES = {
     "Lantern": {
         light: {
             alpha: 0.15,
-            dim: 30,
-            bright: 15,
+            dim: 10,
+            bright: 1.5,
             angle: 30,
             color: "#5c4b0f",
             animation: {
                 type: "flame"
             },
             attenuation: 0.7,
+            luminosity: 0.15,
         },
         resource: {
-            name: "Oil flask", 
+            name: "Oil", 
             type: "item",
             qty: "quantity"
         },
@@ -48,15 +50,16 @@ const LIGHTSOURCES = {
     },
     "Light Spell": {
         light: {
-            alpha: 0.25,
-            dim: 15,
-            bright: 5,
+            alpha: 0.85,
+            dim: 3,
+            bright: 1.5,
             angle: 360,
             color: "#ffffff",
             animation: {
                 type: "starlight"
             },
             attenuation: 0.7,
+            luminosity: 0.7,
         },
         resource: {
             name: "C1.4 Light",
@@ -67,15 +70,16 @@ const LIGHTSOURCES = {
     },
     "Continual Light Spell": {
         light: {
-            alpha: 0.25,
-            dim: 30,
-            bright: 15,
+            alpha: 0.85,
+            dim: 3,
+            bright: 1.5,
             angle: 360,
             color: "#ffffff",
             animation: {
                 type: "starlight"
             },
             attenuation: 0.7,
+            luminosity: 0.7,
         },
         resource: {
             name: "C3.1 Continual Light",
@@ -100,7 +104,7 @@ function hasResources(actor, type, noisily=true) {
 
     const hasDependency = (dependency) ? actor.items.find(f => f.name === dependency.name && f.type === dependency.type) : true;
     log.debug(`has dependency? ${hasDependency}`);
-    const requiredResource = actor.items.find(f => f.name === resource.name && f.type === resource.type);
+    const requiredResource = actor.items.find(f => f.name.includes(resource.name) && f.type === resource.type);
     log.debug("required resource: ", requiredResource);
 
     const quantity = (requiredResource) ? requiredResource.system[resource.qty]  : 0;
